@@ -53,7 +53,17 @@ func main() {
 	})
 	e.GET("/air-copy", func(c echo.Context) error {
 		value := c.QueryParam("value")
-		key, err := gateway.SetHandler(value)
+
+		rawTTL, err := strconv.ParseInt(c.QueryParam("ttl"), 10, 64)
+		if err != nil {
+			return handleErr(c, err)
+		}
+
+		ttl := time.Duration(rawTTL) * time.Second
+
+		key, err := gateway.SetHandler(value, airpaste.SetOptions{
+			TTL: &ttl,
+		})
 		if err != nil {
 			return handleErr(c, err)
 		}
