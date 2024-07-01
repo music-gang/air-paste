@@ -1,6 +1,9 @@
 # Use an official Golang runtime as a parent image
 FROM golang:1.22
 
+# Metadata
+LABEL org.opencontainers.image.source = "https://github.com/music-gang/air-paste"
+
 # Set the working directory inside the container
 WORKDIR /app
 
