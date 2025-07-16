@@ -36,15 +36,20 @@ func main() {
 
 		value := c.FormValue("value")
 
-		rawTTL, err := strconv.ParseInt(c.FormValue("ttl"), 10, 64)
-		if err != nil {
-			return handleErr(c, err)
+		var ttl *time.Duration
+
+		if v := c.FormValue("ttl"); v != "" {
+			rawTTL, err := strconv.ParseInt(c.FormValue("ttl"), 10, 64)
+			if err != nil {
+				return handleErr(c, err)
+			}
+
+			ttl = new(time.Duration)
+			*ttl = time.Duration(rawTTL) * time.Second
 		}
 
-		ttl := time.Duration(rawTTL) * time.Second
-
 		key, err := gateway.SetHandler(value, airpaste.SetOptions{
-			TTL: &ttl,
+			TTL: ttl,
 		})
 		if err != nil {
 			return handleErr(c, err)
@@ -54,15 +59,23 @@ func main() {
 	e.GET("/air-copy", func(c echo.Context) error {
 		value := c.QueryParam("value")
 
-		rawTTL, err := strconv.ParseInt(c.QueryParam("ttl"), 10, 64)
-		if err != nil {
-			return handleErr(c, err)
+		var ttl *time.Duration
+
+		if v := c.QueryParam("ttl"); v != "" {
+
+			rawTTL, err := strconv.ParseInt(c.QueryParam("ttl"), 10, 64)
+			if err != nil {
+				return handleErr(c, err)
+			}
+
+			ttl = new(time.Duration)
+
+			*ttl = time.Duration(rawTTL) * time.Second
+
 		}
 
-		ttl := time.Duration(rawTTL) * time.Second
-
 		key, err := gateway.SetHandler(value, airpaste.SetOptions{
-			TTL: &ttl,
+			TTL: ttl,
 		})
 		if err != nil {
 			return handleErr(c, err)
